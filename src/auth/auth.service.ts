@@ -11,6 +11,7 @@ import * as bcrypt from 'bcrypt';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { ConfigService } from '@nestjs/config';
 import { Cache } from 'cache-manager';
+
 type payloadType = {
   id: number;
   email: string;
@@ -39,6 +40,17 @@ export class AuthService {
     });
   }
 
+  async setTokenToCache(token: string, email: string, tokenType: string) {
+    if (tokenType === 'access_token') {
+      await this.cache.set('access_token_' + email, token, {
+        ttl: 3600,
+      });
+    } else {
+      await this.cache.set('refresh_token_' + email, token, {
+        ttl: 3600 * 24 * 7,
+      });
+    }
+  }
   async signUp(request: CreateUserRequest) {
     const password = request.password;
 
@@ -74,9 +86,7 @@ export class AuthService {
     let token: string = await this.cache.get('access_token_' + user.email);
     if (!token) {
       token = this.generateToken(payload, 'access_token');
-      await this.cache.set('access_token_' + user.email, token, {
-        ttl: 3600,
-      });
+      await this.setTokenToCache(token, user.email, 'access_token');
     }
 
     let refreshToken: string = await this.cache.get(
@@ -85,9 +95,7 @@ export class AuthService {
     if (!refreshToken) {
       refreshToken = this.generateToken(payload, 'refresh_token');
 
-      await this.cache.set('refresh_token_' + user.email, refreshToken, {
-        ttl: 3600 * 24 * 7,
-      });
+      await this.setTokenToCache(refreshToken, user.email, 'refresh_token');
     }
 
     const userResponse = plainToClass(UserResponse, user);
@@ -116,8 +124,6 @@ export class AuthService {
       throw new BadRequestException('Invalid refresh token 3');
     }
 
-    await this.cache.del('access_token_' + email);
-    await this.cache.del('refresh_token_' + email);
     payload = {
       id: payload['id'],
       email: payload['email'],
@@ -128,12 +134,8 @@ export class AuthService {
     const newRefreshToken = this.generateToken(payload, 'refresh_token');
     const newAccessToken = this.generateToken(payload, 'access_token');
 
-    await this.cache.set('access_token_' + email, newAccessToken, {
-      ttl: 3600,
-    });
-    await this.cache.set('refresh_token_' + email, newRefreshToken, {
-      ttl: 3600 * 24 * 7,
-    });
+    await this.setTokenToCache(newAccessToken, email, 'access_token');
+    await this.setTokenToCache(newRefreshToken, email, 'refresh_token');
     return [
       {
         access_token: newAccessToken,
@@ -141,11 +143,16 @@ export class AuthService {
       newRefreshToken,
     ];
   }
-  async signOut(body) {
-    if (!body.email) {
-      throw new BadRequestException('Invalid email');
+  async signOut(refreshToken: string): Promise<boolean> {
+    const payload: payloadType = this.jwtService.verify(refreshToken, {
+      secret: this.config.get<string>('JWT_REFRESH_SECRET'),
+    });
+    if (!payload.email) {
+      throw new BadRequestException('Invalid refresh token');
     }
-    await this.cache.del('access_token_' + body.email);
-    await this.cache.del('refresh_token_' + body.email);
+    const email: string = payload.email;
+    await this.cache.del('access_token_' + email);
+    await this.cache.del('refresh_token_' + email);
+    return true;
   }
 }

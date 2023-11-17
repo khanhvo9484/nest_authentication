@@ -39,7 +39,7 @@ export class UsersService {
       if (e.code === 'P2002') {
         throw new ConflictException('Email already exists');
       } else {
-        throw new InternalServerErrorException();
+        throw new InternalServerErrorException("Couldn't create user");
       }
     }
   }
@@ -49,10 +49,15 @@ export class UsersService {
     data: Prisma.UserUpdateInput;
   }): Promise<User> {
     const { where, data } = params;
-    return this.prisma.user.update({
-      data,
-      where,
-    });
+    try {
+      const result = await this.prisma.user.update({
+        data,
+        where,
+      });
+      return result;
+    } catch (e: any) {
+      throw new InternalServerErrorException("Couldn't update user");
+    }
   }
 
   async deleteUser(where: Prisma.UserWhereUniqueInput): Promise<User> {

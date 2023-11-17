@@ -7,7 +7,7 @@ import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { PrismaModule } from './prisma/prisma.module';
-import { APP_FILTER, APP_GUARD } from '@nestjs/core';
+import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 
 import configuration from './config/configuration';
 import { HttpExceptionFilter } from './exception-filter/http-exception.filter';
@@ -17,6 +17,7 @@ import { ProtectedController } from './protected/protected.controller';
 import { ProtectedModule } from './protected/protected.module';
 import { RolesModule } from './role-guard/role.module';
 import { AuthGuard } from './auth/auth.guard';
+import { TransformInterceptor } from './reponse-interceptor/global-reponse.interceptor';
 @Module({
   imports: [
     LoggerModule,
@@ -43,6 +44,10 @@ import { AuthGuard } from './auth/auth.guard';
     {
       provide: APP_GUARD,
       useClass: AuthGuard,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: TransformInterceptor,
     },
   ],
 })

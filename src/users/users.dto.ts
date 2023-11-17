@@ -1,6 +1,6 @@
 import { Exclude, Expose, Transform, Type } from 'class-transformer';
 
-import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsString, IsOptional } from 'class-validator';
 
 class CreateUserRequest {
   @IsString()
@@ -16,7 +16,17 @@ class CreateUserRequest {
   @IsNotEmpty({ message: 'Password is required' })
   password: string;
 
-  role?: string;
+  @IsOptional()
+  @IsString()
+  role: string;
+
+  @IsOptional()
+  @IsString()
+  avatar: string;
+
+  @Type(() => Date)
+  @IsNotEmpty({ message: 'Date of birth is required' })
+  dob: Date;
 }
 class SignInRequest {
   @IsEmail({}, { message: 'Invalid email' })
@@ -34,6 +44,25 @@ class SignInRequest {
   }
 }
 
+class UpdateUserRequest {
+  @IsOptional()
+  @IsString()
+  name: string;
+
+  @IsOptional()
+  @IsString()
+  avatar: string;
+
+  @IsOptional()
+  @Type(() => Date)
+  @IsNotEmpty({ message: 'Date of birth is required' })
+  dob: Date;
+
+  @IsOptional()
+  @IsString()
+  bio: string;
+}
+
 @Exclude()
 class UserResponse {
   @Expose()
@@ -47,10 +76,20 @@ class UserResponse {
   role: string;
 
   @Expose()
+  avatar: string;
+
+  @Expose()
+  @Transform(({ value }) => value.toISOString())
+  dob: Date;
+
+  @Expose()
+  bio: string;
+
+  @Expose()
   createdAt: Date;
 
   @Expose()
   updatedAt: Date;
 }
-export { CreateUserRequest, SignInRequest, UserResponse };
+export { CreateUserRequest, SignInRequest, UserResponse, UpdateUserRequest };
 export default CreateUserRequest;

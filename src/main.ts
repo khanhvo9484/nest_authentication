@@ -12,9 +12,11 @@ async function bootstrap() {
     cors: true,
   });
   const config = new ConfigService();
-  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(
+    new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }),
+  );
   app.use(cookieParser());
-
+  app.setGlobalPrefix('api/v1');
   await app.listen(config.get<number>('PORT'));
   logger.log('App server start at port: ');
 
