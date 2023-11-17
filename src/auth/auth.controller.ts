@@ -38,7 +38,6 @@ export class AuthController {
 
   @Post('/sign-in')
   async signIn(@Body() request: SignInRequest, @Res() res: Response) {
-    console.log('before sign in');
     const result = await this.authService.signIn(request);
     const refreshToken = result[1];
     const response = result[0];

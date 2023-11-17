@@ -12,11 +12,7 @@ import { ConfigService } from '@nestjs/config';
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => {
         const store = await redisStore({
-          socket: {
-            host: 'redis-14427.c52.us-east-1-4.ec2.cloud.redislabs.com',
-            port: 14427,
-          },
-          password: configService.get<string>('REDIS_PASSWORD'),
+          url: configService.get<string>('REDIS_URL'),
         });
         return {
           store: store as unknown as CacheStore,
