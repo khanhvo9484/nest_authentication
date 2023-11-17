@@ -7,7 +7,7 @@ generator client {
 
 datasource db {
   provider = "mysql"
-  url      = env("DATABASE_URL")
+  url      = "mysql://avnadmin:AVNS_UMb8stWgNrlfVbhI7J2@myfreedb-khanhtrumpc2.a.aivencloud.com:27064/jwtstarter?ssl-mode=REQUIRED"
 }
 
 model User {
