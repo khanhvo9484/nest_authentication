@@ -11,15 +11,39 @@ datasource db {
 }
 
 model User {
-  id        Int       @id @default(autoincrement())
-  email     String    @unique
-  name      String?
-  password  String
-  role      String    @default("user")
-  dob       DateTime?
-  avatar    String?
-  bio       String?
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
+  id          Int          @id @default(autoincrement())
+  email       String       @unique
+  name        String?
+  password    String
+  role        String       @default("user")
+  dob         DateTime?
+  avatar      String?
+  bio         String?
+  phoneNumber String?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  deletedAt   DateTime?
+  enrollments Enrollment[]
+}
+
+model Classroom {
+  id            Int          @id @default(autoincrement())
+  name          String
+  backgroundImg String?
+  description   String?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  deletedAt     DateTime?
+  enrollments   Enrollment[]
+}
+
+model Enrollment {
+  id          Int       @id @default(autoincrement())
+  userId      Int
+  classroomId Int
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+  user        User      @relation(fields: [userId], references: [id])
+  classroom   Classroom @relation(fields: [classroomId], references: [id])
 }

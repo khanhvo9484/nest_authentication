@@ -86,6 +86,9 @@ class UserResponse {
   bio: string;
 
   @Expose()
+  phoneNumber: string;
+
+  @Expose()
   createdAt: Date;
 
   @Expose()
