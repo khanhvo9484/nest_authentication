@@ -28,7 +28,9 @@ export class UsersController {
     const result = await this.userService.findUser({
       id: numberId,
     });
-    return { message: 'Get user info', data: result };
+    if (!result) {
+      throw new BadRequestException('User not found');
+    } else return { message: 'Get user info', data: result };
   }
 
   @Put('/user')
