@@ -18,6 +18,7 @@ import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { Request, Response } from 'express';
 import { Public } from 'src/auth/public-route.decorator';
+import { ConfigService } from '@nestjs/config';
 
 @Public()
 @Controller('auth')
@@ -26,6 +27,7 @@ export class AuthController {
     private authService: AuthService,
     @Inject(CACHE_MANAGER) private cache: Cache,
     private auth: AuthGuard,
+    private config: ConfigService,
   ) {}
 
   @Post('/sign-up')
@@ -46,7 +48,7 @@ export class AuthController {
       httpOnly: true,
       path: '*/auth/refresh-token',
       sameSite: 'none',
-      expires: new Date(new Date().getTime() + 60 * 1000 * 60),
+      expires: new Date(new Date().getTime() + 1000 * 3600 * 24 * 30),
     });
     return res.status(200).json({
       message: 'Sign in successfully',
@@ -70,7 +72,7 @@ export class AuthController {
       httpOnly: true,
       path: '*/auth/refresh-token',
       sameSite: 'none',
-      expires: new Date(new Date().getTime() + 60 * 1000 * 60),
+      expires: new Date(new Date().getTime() + 1000 * 3600 * 24 * 30),
     });
 
     return res

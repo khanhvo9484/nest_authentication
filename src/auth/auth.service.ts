@@ -31,23 +31,25 @@ export class AuthService {
     if (tokenType === 'access_token') {
       return this.jwtService.sign(payload, {
         secret: this.config.get<string>('JWT_SECRET'),
-        expiresIn: this.config.get<string>('JWT_EXPIRATION_TIME'),
+        expiresIn: parseInt(this.config.get<string>('JWT_EXPIRATION_TIME')),
       });
     }
     return this.jwtService.sign(payload, {
       secret: this.config.get<string>('JWT_REFRESH_SECRET'),
-      expiresIn: this.config.get<string>('JWT_REFRESH_EXPIRATION_TIME'),
+      expiresIn: parseInt(
+        this.config.get<string>('JWT_REFRESH_EXPIRATION_TIME'),
+      ),
     });
   }
 
   async setTokenToCache(token: string, email: string, tokenType: string) {
     if (tokenType === 'access_token') {
       await this.cache.set('access_token_' + email, token, {
-        ttl: 3600,
+        ttl: parseInt(this.config.get('JWT_EXPIRATION_TIME')),
       });
     } else {
       await this.cache.set('refresh_token_' + email, token, {
-        ttl: 3600 * 24 * 7,
+        ttl: parseInt(this.config.get('JWT_REFRESH_EXPIRATION_TIME')),
       });
     }
   }
