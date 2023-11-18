@@ -61,6 +61,10 @@ class UpdateUserRequest {
   @IsOptional()
   @IsString()
   bio: string;
+
+  @IsOptional()
+  @IsString()
+  phoneNumber: string;
 }
 
 @Exclude()
