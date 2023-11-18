@@ -30,7 +30,11 @@ export class UsersController {
     });
     if (!result) {
       throw new BadRequestException('User not found');
-    } else return { message: 'Get user info', data: result };
+    } else
+      return {
+        message: 'Get user info',
+        data: plainToClass(UserResponse, result),
+      };
   }
 
   @Put('/user')
