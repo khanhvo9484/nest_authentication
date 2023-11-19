@@ -41,58 +41,35 @@ export class AuthController {
   @Post('/sign-in')
   async signIn(@Body() request: SignInRequest, @Res() res: Response) {
     const result = await this.authService.signIn(request);
-    const refreshToken = result[1];
-    const response = result[0];
 
-    res.cookie('refresh_token', refreshToken, {
-      httpOnly: true,
-      path: '*/auth/refresh-token',
-      sameSite: 'none',
-      expires: new Date(new Date().getTime() + 1000 * 3600 * 24 * 30),
-    });
     return res.status(200).json({
       message: 'Sign in successfully',
-      data: response,
+      data: result,
     });
   }
 
   @Post('/refresh-token/refresh')
-  async refreshToken(@Req() req: Request, @Res() res: Response) {
-    const refreshToken = req.cookies['refresh_token'];
+  async refreshToken(
+    @Req() req: Request,
+    @Res() res: Response,
+    @Body() body: any,
+  ) {
+    const refreshToken = body.refresh_token;
 
     if (!refreshToken) {
       throw new BadRequestException('Invalid refresh token');
     }
 
     const result = await this.authService.refreshToken(refreshToken);
-    const response = result[0];
-    const newRefreshToken = result[1];
-
-    res.cookie('refresh_token', newRefreshToken, {
-      httpOnly: true,
-      path: '*/auth/refresh-token',
-      sameSite: 'none',
-      expires: new Date(new Date().getTime() + 1000 * 3600 * 24 * 30),
-    });
-
     return res
       .status(200)
-      .json({ message: 'Refresh token successfully', data: response });
+      .json({ message: 'Refresh token successfully', data: result });
   }
 
   @Post('/refresh-token/sign-out')
-  async signOut(@Req() req: Request, @Res() res: Response) {
-    const refreshToken: string = req.cookies['refresh_token'];
-    if (!refreshToken) {
-      throw new BadRequestException('Invalid refresh token');
-    }
+  async signOut(@Req() req: Request, @Res() res: Response, @Body() body: any) {
+    const refreshToken = body.refresh_token;
     await this.authService.signOut(refreshToken);
-
-    res.clearCookie('refresh_token', {
-      httpOnly: true,
-      path: '/auth/refresh-token',
-      sameSite: 'none',
-    });
 
     return res.status(200).json({
       message: 'Sign out successfully',

@@ -101,13 +101,11 @@ export class AuthService {
     }
 
     const userResponse = plainToClass(UserResponse, user);
-    return [
-      {
-        access_token: token,
-        user: userResponse,
-      },
-      refreshToken,
-    ];
+    return {
+      access_token: token,
+      user: userResponse,
+      refresh_token: refreshToken,
+    };
   }
   async refreshToken(refreshToken: string) {
     let payload = this.jwtService.verify(refreshToken, {
@@ -138,13 +136,12 @@ export class AuthService {
 
     await this.setTokenToCache(newAccessToken, email, 'access_token');
     await this.setTokenToCache(newRefreshToken, email, 'refresh_token');
-    return [
-      {
-        access_token: newAccessToken,
-      },
-      newRefreshToken,
-    ];
+    return {
+      access_token: newAccessToken,
+      refresh_token: newRefreshToken,
+    };
   }
+
   async signOut(refreshToken: string): Promise<boolean> {
     const payload: payloadType = this.jwtService.verify(refreshToken, {
       secret: this.config.get<string>('JWT_REFRESH_SECRET'),
