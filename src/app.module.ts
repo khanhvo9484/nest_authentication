@@ -18,6 +18,7 @@ import { ProtectedModule } from './protected/protected.module';
 import { RolesModule } from './role-guard/role.module';
 import { AuthGuard } from './auth/auth.guard';
 import { TransformInterceptor } from './reponse-interceptor/global-reponse.interceptor';
+import { PassportModule } from '@nestjs/passport';
 @Module({
   imports: [
     LoggerModule,
@@ -31,6 +32,7 @@ import { TransformInterceptor } from './reponse-interceptor/global-reponse.inter
     PrismaModule,
     ProtectedModule,
     RolesModule,
+    PassportModule.register({}),
   ],
   controllers: [AppController, ProtectedController],
   providers: [

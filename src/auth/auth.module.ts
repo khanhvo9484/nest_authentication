@@ -5,6 +5,8 @@ import { UsersModule } from 'src/users/users.module';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { AuthGuard } from './auth.guard';
+import { GoogleStrategy } from './utils/google.strategy';
+import { Serializer } from './utils/serializer';
 const config = new ConfigService();
 
 @Module({
@@ -16,7 +18,7 @@ const config = new ConfigService();
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, AuthGuard],
+  providers: [AuthService, AuthGuard, GoogleStrategy, Serializer],
   exports: [AuthService, AuthGuard],
 })
 export class AuthModule {}

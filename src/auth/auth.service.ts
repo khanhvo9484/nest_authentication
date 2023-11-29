@@ -12,7 +12,7 @@ import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { ConfigService } from '@nestjs/config';
 import { Cache } from 'cache-manager';
 
-type payloadType = {
+export type payloadType = {
   id: number;
   email: string;
   name: string;

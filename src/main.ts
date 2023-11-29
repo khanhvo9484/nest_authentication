@@ -4,6 +4,7 @@ import { MyLogger } from './logger/logger.service';
 import { ConfigService } from '@nestjs/config';
 import { ValidationPipe } from '@nestjs/common';
 import * as cookieParser from 'cookie-parser';
+import * as passport from 'passport';
 declare const module: any;
 async function bootstrap() {
   const logger = new MyLogger();
@@ -19,6 +20,7 @@ async function bootstrap() {
     new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }),
   );
   app.use(cookieParser());
+  app.use(passport.initialize());
   app.setGlobalPrefix('api/v1');
   await app.listen(config.get<number>('PORT'));
   logger.log('App server start at port: ');

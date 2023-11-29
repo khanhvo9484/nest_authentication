@@ -19,6 +19,7 @@ import { Cache } from 'cache-manager';
 import { Request, Response } from 'express';
 import { Public } from 'src/auth/public-route.decorator';
 import { ConfigService } from '@nestjs/config';
+import { GoogleAuthGuard } from './utils/google.guard';
 
 @Public()
 @Controller('auth')
@@ -77,6 +78,23 @@ export class AuthController {
     });
   }
 
+  @Get('/google/login')
+  @UseGuards(GoogleAuthGuard)
+  google() {
+    return {
+      message: 'Google',
+      data: {},
+    };
+  }
+
+  @Get('/google/redirect')
+  @UseGuards(GoogleAuthGuard)
+  googleRedirect() {
+    return {
+      message: 'OK',
+      data: {},
+    };
+  }
   @Get('/test')
   @HttpCode(200)
   testGuard() {

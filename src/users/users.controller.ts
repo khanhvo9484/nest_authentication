@@ -17,6 +17,7 @@ import CreateUserRequest, {
 import { Request } from 'express';
 import { Public } from 'src/auth/public-route.decorator';
 import { plainToClass } from 'class-transformer';
+import { payloadType } from 'src/auth/auth.service';
 @Controller('users')
 export class UsersController {
   constructor(private userService: UsersService) {}
@@ -38,7 +39,10 @@ export class UsersController {
   }
 
   @Put('/user')
-  async updateUser(@Req() request: Request, @Body() body: UpdateUserRequest) {
+  async updateUser(
+    @Req() request: Request & { user: payloadType },
+    @Body() body: UpdateUserRequest,
+  ) {
     if (!request['user']) {
       throw new BadRequestException('Invalid call');
     }
