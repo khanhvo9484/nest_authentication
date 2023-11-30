@@ -19,7 +19,10 @@ import { Cache } from 'cache-manager';
 import { Request, Response } from 'express';
 import { Public } from 'src/auth/public-route.decorator';
 import { ConfigService } from '@nestjs/config';
-
+const SparkPost = require('sparkpost');
+const sparkpostClient = new SparkPost(process.env.SPARKPOST_API_KEY, {
+  endpoint: 'https://api.sparkpost.com:443',
+});
 @Public()
 @Controller('auth')
 export class AuthController {
@@ -84,5 +87,31 @@ export class AuthController {
       message: 'Test reponse',
       data: { hehe: 'hehe' },
     };
+  }
+  @Get('/send-email')
+  async sendEmail() {
+    try {
+      const result = await sparkpostClient.transmissions.send({
+        options: {
+          sandbox: false, // Set to false for actual delivery
+        },
+        content: {
+          from: 'khanhvo@k3unicorn.tech', // Update to a valid email address
+          subject: 'Hello, World!',
+          html: "<html><body><p>Testing SparkPost - the world's most awesomest email service!</p></body></html>",
+        },
+        recipients: [{ address: 'khanhtrumpc2@gmail.com' }],
+      });
+
+      console.log(result);
+
+      return {
+        message: 'Send email successfully',
+        data: result,
+      };
+    } catch (error) {
+      console.error(error);
+      throw error; // Rethrow the error to let Nest handle it
+    }
   }
 }
