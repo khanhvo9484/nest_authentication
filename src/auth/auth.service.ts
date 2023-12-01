@@ -11,6 +11,8 @@ import * as bcrypt from 'bcrypt';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { ConfigService } from '@nestjs/config';
 import { Cache } from 'cache-manager';
+import { IAuthUser } from './auth.interface';
+import { User } from '@prisma/client';
 
 type payloadType = {
   id: number;
@@ -53,6 +55,7 @@ export class AuthService {
       });
     }
   }
+
   async signUp(request: CreateUserRequest) {
     const password = request.password;
 
@@ -153,5 +156,48 @@ export class AuthService {
     await this.cache.del('access_token_' + email);
     await this.cache.del('refresh_token_' + email);
     return true;
+  }
+
+  async validateUser(authUser: IAuthUser) {
+    const user = await this.usersService.findUser({
+      email: authUser.email,
+    });
+
+    if (user) return user;
+
+    const newUser = await this.usersService.createUser(authUser);
+
+    return newUser;
+  }
+
+  async authLogin(user: User) {
+    const payload: payloadType = {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      role: user.role,
+    };
+
+    let token: string = await this.cache.get('access_token_' + user.email);
+    if (!token) {
+      token = this.generateToken(payload, 'access_token');
+      await this.setTokenToCache(token, user.email, 'access_token');
+    }
+
+    let refreshToken: string = await this.cache.get(
+      'refresh_token_' + user.email,
+    );
+    if (!refreshToken) {
+      refreshToken = this.generateToken(payload, 'refresh_token');
+      await this.setTokenToCache(refreshToken, user.email, 'refresh_token');
+    }
+
+    const userResponse = plainToClass(UserResponse, user);
+
+    return {
+      access_token: token,
+      user: userResponse,
+      refresh_token: refreshToken,
+    };
   }
 }

@@ -1,5 +1,4 @@
 import { AuthGuard } from './auth.guard';
-import { UsersService } from './../users/users.service';
 import {
   Body,
   Controller,
@@ -19,6 +18,7 @@ import { Cache } from 'cache-manager';
 import { Request, Response } from 'express';
 import { Public } from 'src/auth/public-route.decorator';
 import { ConfigService } from '@nestjs/config';
+import { AuthGuard as AuthGuardPassport } from '@nestjs/passport/dist';
 
 @Public()
 @Controller('auth')
@@ -75,6 +75,34 @@ export class AuthController {
       message: 'Sign out successfully',
       data: {},
     });
+  }
+
+  @Get('google')
+  @UseGuards(AuthGuardPassport('google'))
+  async googleLogin() {}
+
+  @Get('google/callback')
+  @UseGuards(AuthGuardPassport('google'))
+  async googleAuthCallback(@Req() request, @Res() response: Response) {
+    const user = request.user;
+    const data = await this.authService.authLogin(user);
+
+    response.cookie('payload', JSON.stringify(data), { httpOnly: false });
+    response.redirect('http://localhost:4000');
+  }
+
+  @Get('facebook')
+  @UseGuards(AuthGuardPassport('facebook'))
+  async facebookLogin() {}
+
+  @Get('facebook/callback')
+  @UseGuards(AuthGuardPassport('facebook'))
+  async facebookAuthCallback(@Req() request, @Res() response: Response) {
+    const user = request.user;
+    const data = await this.authService.authLogin(user);
+
+    response.cookie('payload', JSON.stringify(data), { httpOnly: false });
+    response.redirect('http://localhost:4000');
   }
 
   @Get('/test')

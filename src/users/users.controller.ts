@@ -4,16 +4,11 @@ import {
   Controller,
   Get,
   Param,
-  Post,
   Put,
   Req,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { TransformEntityToDto } from 'src/decorators/entity-to-dto.decorator';
-import CreateUserRequest, {
-  UpdateUserRequest,
-  UserResponse,
-} from './users.dto';
+import { UpdateUserRequest, UserResponse } from './users.dto';
 import { Request } from 'express';
 import { Public } from 'src/auth/public-route.decorator';
 import { plainToClass } from 'class-transformer';

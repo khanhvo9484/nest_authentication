@@ -1,4 +1,4 @@
-import { Exclude, Expose, Transform, Type } from 'class-transformer';
+import { Exclude, Expose, Type } from 'class-transformer';
 
 import { IsEmail, IsNotEmpty, IsString, IsOptional } from 'class-validator';
 
@@ -81,10 +81,6 @@ class UserResponse {
 
   @Expose()
   avatar: string;
-
-  @Expose()
-  @Transform(({ value }) => value.toISOString())
-  dob: Date;
 
   @Expose()
   bio: string;
