@@ -18,6 +18,8 @@ import { ProtectedModule } from './protected/protected.module';
 import { RolesModule } from './role-guard/role.module';
 import { AuthGuard } from './auth/auth.guard';
 import { TransformInterceptor } from './reponse-interceptor/global-reponse.interceptor';
+import { TokensService } from './tokens/tokens.service';
+import { TokensModule } from './tokens/tokens.module';
 @Module({
   imports: [
     LoggerModule,
@@ -31,6 +33,7 @@ import { TransformInterceptor } from './reponse-interceptor/global-reponse.inter
     PrismaModule,
     ProtectedModule,
     RolesModule,
+    TokensModule,
   ],
   controllers: [AppController, ProtectedController],
   providers: [
@@ -49,6 +52,7 @@ import { TransformInterceptor } from './reponse-interceptor/global-reponse.inter
       provide: APP_INTERCEPTOR,
       useClass: TransformInterceptor,
     },
+    TokensService,
   ],
 })
 export class AppModule {}

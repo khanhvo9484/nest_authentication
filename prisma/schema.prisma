@@ -24,6 +24,19 @@ model User {
   updatedAt   DateTime     @updatedAt
   deletedAt   DateTime?
   enrollments Enrollment[]
+  tokens      UserToken[]
+  isVerified  Boolean      @default(false)
+}
+
+model UserToken {
+  id        Int       @id @default(autoincrement())
+  userId    Int
+  token     String    @unique
+  isUsed    Boolean   @default(false)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+  user      User      @relation(fields: [userId], references: [id])
 }
 
 model Classroom {

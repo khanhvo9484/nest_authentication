@@ -4,15 +4,18 @@ import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import CreateUserRequest, {
   SignInRequest,
   UserResponse,
-} from 'src/users/users.dto';
-import { UsersService } from 'src/users/users.service';
+} from '@users/users.dto';
+import { UsersService } from '@users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { ConfigService } from '@nestjs/config';
 import { Cache } from 'cache-manager';
 import { IAuthUser } from './auth.interface';
-import { User } from '@prisma/client';
+import { User, UserToken } from '@prisma/client';
+import { TokensService } from 'tokens/tokens.service';
+import { TokenType, UserTokenService } from './user-token.service';
+import { SendEmailService } from './send-email.service';
 
 type payloadType = {
   id: number;
@@ -20,13 +23,17 @@ type payloadType = {
   name: string;
   role: string;
 };
+
 @Injectable()
 export class AuthService {
   constructor(
     private usersService: UsersService,
+    private tokensService: TokensService,
     private jwtService: JwtService,
     @Inject(CACHE_MANAGER) private cache: Cache,
     private config: ConfigService,
+    private userTokenService: UserTokenService,
+    private sendEmailService: SendEmailService,
   ) {}
 
   generateToken(payload: payloadType, tokenType: string) {
@@ -64,11 +71,38 @@ export class AuthService {
     request.password = hashPassword;
 
     const result = await this.usersService.createUser(request);
+    const verificationToken = await this.userTokenService.createUserToken(
+      {
+        email: result.email,
+        subject: TokenType.ACTIVATE_ACCOUNT,
+      },
+      result.id,
+    );
+
+    const sendResult = await this.sendEmailService.sendVerificationEmail(
+      result.email,
+      verificationToken,
+    );
+
     const userResponse = plainToClass(UserResponse, result);
     return userResponse;
   }
 
-  async signIn(request: SignInRequest) {
+  async activateAccount(email: string, token: string) {
+    await this.userTokenService.verifyUserToken(
+      email,
+      token,
+      TokenType.ACTIVATE_ACCOUNT,
+    );
+    await this.usersService.updateUser({
+      where: { email },
+      data: { isVerified: true },
+    });
+    await this.tokensService.setTokenUsed(token);
+    return true;
+  }
+  async forgotPassword(email: string) {}
+  async logIn(request: SignInRequest) {
     const user = await this.usersService.findUser({
       email: request.email,
     });
@@ -79,6 +113,9 @@ export class AuthService {
     const match = await bcrypt.compare(request.password, user.password);
     if (!match) {
       throw new BadRequestException('Invalid email or password');
+    }
+    if (user.isVerified === false) {
+      throw new BadRequestException('Please verify your email');
     }
 
     const payload: payloadType = {
@@ -111,9 +148,14 @@ export class AuthService {
     };
   }
   async refreshToken(refreshToken: string) {
-    let payload = this.jwtService.verify(refreshToken, {
-      secret: this.config.get<string>('JWT_REFRESH_SECRET'),
-    });
+    let payload: payloadType;
+    try {
+      payload = this.jwtService.verify(refreshToken, {
+        secret: this.config.get<string>('JWT_REFRESH_SECRET'),
+      });
+    } catch (err) {
+      throw new BadRequestException('Invalid refresh token');
+    }
 
     const email = payload['email'];
     if (!email) {

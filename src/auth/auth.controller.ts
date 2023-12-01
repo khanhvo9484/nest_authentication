@@ -12,11 +12,11 @@ import {
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { BadRequestException } from '@nestjs/common';
-import CreateUserRequest, { SignInRequest } from 'src/users/users.dto';
+import CreateUserRequest, { SignInRequest } from '@users/users.dto';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { Request, Response } from 'express';
-import { Public } from 'src/auth/public-route.decorator';
+import { Public } from '@auth/public-route.decorator';
 import { ConfigService } from '@nestjs/config';
 import { AuthGuard as AuthGuardPassport } from '@nestjs/passport/dist';
 
@@ -38,9 +38,19 @@ export class AuthController {
       .json({ message: 'Sign up successfully', data: result });
   }
 
+  @Post('/verify-email')
+  async verifyEmail(@Body() request: any, @Res() res: Response) {
+    const { email, token } = request;
+    const result = await this.authService.activateAccount(email, token);
+
+    return res
+      .status(200)
+      .json({ message: 'Verify email successfully', data: result });
+  }
+
   @Post('/sign-in')
   async signIn(@Body() request: SignInRequest, @Res() res: Response) {
-    const result = await this.authService.signIn(request);
+    const result = await this.authService.logIn(request);
 
     return res.status(200).json({
       message: 'Sign in successfully',
@@ -88,7 +98,7 @@ export class AuthController {
     const data = await this.authService.authLogin(user);
 
     response.cookie('payload', JSON.stringify(data), { httpOnly: false });
-    response.redirect('http://localhost:4000');
+    response.redirect(this.config.get('FRONTEND_URL'));
   }
 
   @Get('facebook')
@@ -102,7 +112,7 @@ export class AuthController {
     const data = await this.authService.authLogin(user);
 
     response.cookie('payload', JSON.stringify(data), { httpOnly: false });
-    response.redirect('http://localhost:4000');
+    response.redirect(this.config.get('FRONTEND_URL'));
   }
 
   @Get('/test')

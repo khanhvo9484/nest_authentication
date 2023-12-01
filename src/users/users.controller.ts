@@ -10,7 +10,7 @@ import {
 import { UsersService } from './users.service';
 import { UpdateUserRequest, UserResponse } from './users.dto';
 import { Request } from 'express';
-import { Public } from 'src/auth/public-route.decorator';
+import { Public } from '@auth/public-route.decorator';
 import { plainToClass } from 'class-transformer';
 @Controller('users')
 export class UsersController {
