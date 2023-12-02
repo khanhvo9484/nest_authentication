@@ -53,6 +53,31 @@ export class AuthController {
       .json({ message: 'Verify email successfully', data: result });
   }
 
+  @Post('/forgot-password')
+  async forgotPassword(
+    @Body() request: { email: string },
+    @Res() res: Response,
+  ) {
+    const { email } = request;
+    const result = await this.authService.forgotPassword(email);
+
+    return res
+      .status(200)
+      .json({ message: 'Reset password successfully', data: result });
+  }
+
+  @Post('/reset-password')
+  async resetPassword(
+    @Body() request: { email: string; password: string },
+    @Res() res: Response,
+  ) {
+    const { email, password } = request;
+    const result = await this.authService.resetPassword(email, password);
+
+    return res
+      .status(200)
+      .json({ message: 'Reset password successfully', data: result });
+  }
   @Post('/sign-in')
   async signIn(@Body() request: SignInRequest, @Res() res: Response) {
     const result = await this.authService.logIn(request);

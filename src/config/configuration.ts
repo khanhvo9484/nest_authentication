@@ -3,6 +3,7 @@ export default () => ({
   BACKEND_URL: process.env.BACKEND_URL,
 
   FE_EMAIL_VERIFICATION_URL: process.env.FRONTEND_URL + '/auth/verify-email?',
+  FE_RESET_PASSWORD_URL: process.env.FRONTEND_URL + '/auth/reset-password?',
 
   PORT: parseInt(process.env.PORT, 10) || 3000,
   DATABASE_URL: process.env.DATABASE_URL,

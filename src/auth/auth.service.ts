@@ -99,9 +99,56 @@ export class AuthService {
       data: { isVerified: true },
     });
     await this.tokensService.setTokenUsed(token);
-    return true;
+    return {
+      message: 'Account activated successfully',
+    };
   }
-  async forgotPassword(email: string) {}
+
+  // send reset password email ----------------------------------------------
+  async forgotPassword(email: string) {
+    const user = await this.usersService.findUser({
+      email: email,
+    });
+    if (!user) {
+      throw new BadRequestException('Invalid email');
+    }
+    const resetPasswordToken = await this.userTokenService.createUserToken(
+      {
+        email: user.email,
+        subject: TokenType.RESET_PASSWORD,
+      },
+      user.id,
+    );
+    await this.sendEmailService.sendResetPasswordEmail(
+      email,
+      resetPasswordToken,
+    );
+    return {
+      resetPasswordToken: resetPasswordToken,
+    };
+  }
+  // end send reset password email ----------------------------------------------
+
+  async resetPassword(email: string, password: string) {
+    const user = await this.usersService.findUser({
+      email: email,
+    });
+    if (!user) {
+      throw new BadRequestException('Invalid email');
+    }
+    const salt = await bcrypt.genSalt();
+    const hashPassword = await bcrypt.hash(password, salt);
+    await this.usersService.updateUser({
+      where: { email },
+      data: { password: hashPassword },
+    });
+    return {
+      message: 'Reset password successfully',
+    };
+  }
+
+  // reset password ----------------------------------------------
+
   async logIn(request: SignInRequest) {
     const user = await this.usersService.findUser({
       email: request.email,

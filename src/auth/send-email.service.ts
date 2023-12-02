@@ -32,5 +32,32 @@ export class SendEmailService {
         throw new Error('Error in sending email');
       });
   }
+  async sendResetPasswordEmail(to: string, token: string) {
+    let resetPasswordLink = `${this.config.get(
+      'FE_RESET_PASSWORD_URL',
+    )}email=${to}&token=${token}`;
+
+    resetPasswordLink = resetPasswordLink.replace('http://', '');
+
+    sparkpostClient.transmissions
+      .send({
+        options: {
+          sandbox: false, // Set to false for actual delivery
+        },
+        content: {
+          template_id: 'email-forgot-password',
+        },
+        substitution_data: {
+          reset_password_link: resetPasswordLink,
+        },
+        recipients: [{ address: to }],
+      })
+      .then((data) => {
+        return true;
+      })
+      .catch((err) => {
+        throw new Error('Error in sending email');
+      });
+  }
   async sendTestEmail(to: string) {}
 }
