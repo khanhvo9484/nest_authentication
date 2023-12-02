@@ -20,6 +20,7 @@ import { Public } from '@auth/public-route.decorator';
 import { ConfigService } from '@nestjs/config';
 import { AuthGuard as AuthGuardPassport } from '@nestjs/passport/dist';
 import { SendEmailService } from './send-email.service';
+import { SUCCESS_PAGE_URL } from 'constant/common.constant';
 
 @Public()
 @Controller('auth')
@@ -126,9 +127,10 @@ export class AuthController {
   async googleAuthCallback(@Req() request, @Res() response: Response) {
     const user = request.user;
     const data = await this.authService.authLogin(user);
+    const url_redirect = this.config.get('FRONTEND_URL') + SUCCESS_PAGE_URL;
 
     response.cookie('payload', JSON.stringify(data), { httpOnly: false });
-    response.redirect(this.config.get('FRONTEND_URL'));
+    response.redirect(url_redirect);
   }
 
   @Get('facebook')
@@ -140,9 +142,10 @@ export class AuthController {
   async facebookAuthCallback(@Req() request, @Res() response: Response) {
     const user = request.user;
     const data = await this.authService.authLogin(user);
+    const url_redirect = this.config.get('FRONTEND_URL') + SUCCESS_PAGE_URL;
 
     response.cookie('payload', JSON.stringify(data), { httpOnly: false });
-    response.redirect(this.config.get('FRONTEND_URL'));
+    response.redirect(url_redirect);
   }
 
   @Get('/test')
