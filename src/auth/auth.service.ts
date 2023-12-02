@@ -129,7 +129,24 @@ export class AuthService {
   }
   // end send reset password email ----------------------------------------------
 
+  // verify reset password ----------------------------------------------
+  async verifyResetPassword(email: string, token: string) {
+    await this.userTokenService.verifyUserToken(
+      email,
+      token,
+      TokenType.RESET_PASSWORD,
+    );
+    return {
+      message: 'Verify reset password successfully',
+    };
+  }
+  // end verify reset password ----------------------------------------------
+
+  // reset password ----------------------------------------------
   async resetPassword(email: string, password: string) {
+    if (!password) throw new BadRequestException('Password is required');
+    if (!email) throw new BadRequestException('Email is required');
+
     const user = await this.usersService.findUser({
       email: email,
     });

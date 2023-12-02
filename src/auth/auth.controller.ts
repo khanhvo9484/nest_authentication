@@ -66,6 +66,19 @@ export class AuthController {
       .json({ message: 'Reset password successfully', data: result });
   }
 
+  @Post('/verify-reset-password')
+  async verifyResetPassword(
+    @Body() request: { token: string; email: string },
+    @Res() res: Response,
+  ) {
+    const { token, email } = request;
+    const result = await this.authService.verifyResetPassword(email, token);
+
+    return res
+      .status(200)
+      .json({ message: 'Verify reset password successfully', data: result });
+  }
+
   @Post('/reset-password')
   async resetPassword(
     @Body() request: { email: string; password: string },

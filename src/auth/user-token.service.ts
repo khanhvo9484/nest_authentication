@@ -50,13 +50,13 @@ export class UserTokenService {
         secret: this.config.get<string>('JWT_TOKEN_SECRET'),
       });
     } catch (err) {
-      throw new BadRequestException('Invalid token');
+      throw new BadRequestException('Invalid token 1');
     }
     if (!payload.email || payload.email !== email) {
-      throw new BadRequestException('Invalid token');
+      throw new BadRequestException('Invalid token 2');
     }
     if (payload.subject !== subject) {
-      throw new BadRequestException('Invalid token');
+      throw new BadRequestException('Invalid token 3');
     }
     return true;
   }
