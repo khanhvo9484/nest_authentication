@@ -31,6 +31,7 @@ export class FacebookStrategy extends PassportStrategy(Strategy, 'facebook') {
       name: name.givenName + ' ' + name.familyName,
       avatar: photos[0].value,
       password: '',
+      isVerified: true,
     };
 
     const authUser = await this.authService.validateUser(user);

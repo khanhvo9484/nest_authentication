@@ -1,28 +1,16 @@
 import { Injectable } from '@nestjs/common';
-import * as fs from 'fs';
-const path = require('path');
 import sparkpostClient from './email-sender/sparkpost';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class SendEmailService {
+  constructor(private config: ConfigService) {}
   async sendVerificationEmail(to: string, token: string) {
-    let htmlString: string = '';
-    const templatePath = path.join(
-      __dirname,
-      '..',
-      'src',
-      'html-template',
-      'email-template',
-      'VerifyEmail.html',
-    );
-    try {
-      htmlString = fs.readFileSync(templatePath, 'utf-8');
-    } catch (err) {
-      throw new Error(err);
-    }
-    htmlString = htmlString
-      .replace('{{verification_link}}', token)
-      .replace('{{logo}}', 'logo');
+    let verifyLink = `${this.config.get(
+      'FE_EMAIL_VERIFICATION_URL',
+    )}email=${to}&token=${token}`;
+
+    verifyLink = verifyLink.replace('http://', '');
 
     sparkpostClient.transmissions
       .send({
@@ -30,9 +18,10 @@ export class SendEmailService {
           sandbox: false, // Set to false for actual delivery
         },
         content: {
-          from: process.env.SPAKPOST_EMAIL_FROM_NAME, // Update to a valid email address
-          subject: 'Verify your email',
-          html: htmlString,
+          template_id: 'email-verification',
+        },
+        substitution_data: {
+          verify_link: verifyLink,
         },
         recipients: [{ address: to }],
       })
@@ -43,4 +32,5 @@ export class SendEmailService {
         throw new Error('Error in sending email');
       });
   }
+  async sendTestEmail(to: string) {}
 }

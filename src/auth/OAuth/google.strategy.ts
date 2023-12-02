@@ -30,6 +30,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
       name: displayName,
       avatar: photos[0].value,
       password: '',
+      isVerified: true,
     };
     const authUser = await this.authService.validateUser(user);
 

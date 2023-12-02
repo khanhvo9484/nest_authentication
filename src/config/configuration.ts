@@ -2,6 +2,8 @@ export default () => ({
   FRONTEND_URL: process.env.FRONTEND_URL,
   BACKEND_URL: process.env.BACKEND_URL,
 
+  FE_EMAIL_VERIFICATION_URL: process.env.FRONTEND_URL + '/auth/verify-email?',
+
   PORT: parseInt(process.env.PORT, 10) || 3000,
   DATABASE_URL: process.env.DATABASE_URL,
 

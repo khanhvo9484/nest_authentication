@@ -23,6 +23,7 @@ export class UserTokenService {
   async createUserToken(payload: TokenPayload, userId: number) {
     const token = this.jwtService.sign(payload, {
       secret: this.config.get<string>('JWT_TOKEN_SECRET'),
+      expiresIn: 900,
     });
     const result = await this.tokensService.createToken({
       token,

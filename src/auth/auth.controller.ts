@@ -19,12 +19,14 @@ import { Request, Response } from 'express';
 import { Public } from '@auth/public-route.decorator';
 import { ConfigService } from '@nestjs/config';
 import { AuthGuard as AuthGuardPassport } from '@nestjs/passport/dist';
+import { SendEmailService } from './send-email.service';
 
 @Public()
 @Controller('auth')
 export class AuthController {
   constructor(
     private authService: AuthService,
+    private emailSender: SendEmailService,
     @Inject(CACHE_MANAGER) private cache: Cache,
     private auth: AuthGuard,
     private config: ConfigService,
@@ -39,8 +41,11 @@ export class AuthController {
   }
 
   @Post('/verify-email')
-  async verifyEmail(@Body() request: any, @Res() res: Response) {
-    const { email, token } = request;
+  async verifyEmail(
+    @Body() request: { token: string; email: string },
+    @Res() res: Response,
+  ) {
+    const { token, email } = request;
     const result = await this.authService.activateAccount(email, token);
 
     return res
@@ -121,6 +126,14 @@ export class AuthController {
     return {
       message: 'Test reponse',
       data: { hehe: 'hehe' },
+    };
+  }
+
+  @Get('/send-test-email')
+  async sendTestEmail() {
+    await this.emailSender.sendTestEmail('khanhvogpt2@gmail.com');
+    return {
+      message: 'Send test email successfully',
     };
   }
 }

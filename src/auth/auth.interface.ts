@@ -3,4 +3,5 @@ export interface IAuthUser {
   email: string;
   avatar: string;
   password: string;
+  isVerified?: boolean;
 }
