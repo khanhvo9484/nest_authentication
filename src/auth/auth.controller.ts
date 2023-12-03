@@ -146,7 +146,7 @@ export class AuthController {
       httpOnly: false,
       secure: true,
       sameSite: 'none',
-      domain: 'classroom.k3unicorn.tech',
+      domain: 'k3unicorn.tech',
       maxAge: 60000,
     });
     response.redirect(url_redirect);
