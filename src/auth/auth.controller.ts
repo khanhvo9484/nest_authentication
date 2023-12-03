@@ -144,6 +144,7 @@ export class AuthController {
 
     response.cookie('payload', JSON.stringify(data), {
       httpOnly: false,
+      secure: true,
     });
     response.redirect(url_redirect);
   }
