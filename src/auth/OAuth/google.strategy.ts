@@ -34,6 +34,10 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
     };
     const authUser = await this.authService.validateUser(user);
 
+    console.log(
+      'URI_CALLBACK: ',
+      this.config.get<string>('GOOGLE_CALLBACK_URL'),
+    );
     done(null, authUser);
   }
 }

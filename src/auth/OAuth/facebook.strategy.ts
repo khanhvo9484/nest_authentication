@@ -9,7 +9,7 @@ import { ConfigService } from '@nestjs/config';
 export class FacebookStrategy extends PassportStrategy(Strategy, 'facebook') {
   constructor(
     private authService: AuthService,
-    config: ConfigService,
+    private config: ConfigService,
   ) {
     super({
       clientID: config.get<string>('FACEBOOK_CLIENT_ID'),
@@ -36,6 +36,10 @@ export class FacebookStrategy extends PassportStrategy(Strategy, 'facebook') {
 
     const authUser = await this.authService.validateUser(user);
 
+    console.log(
+      'URL FACEBOOK: ',
+      this.config.get<string>('FACEBOOK_CALLBACK_URL'),
+    );
     done(null, authUser);
   }
 }
