@@ -144,7 +144,6 @@ export class AuthController {
 
     response.cookie('payload', JSON.stringify(data), {
       httpOnly: false,
-      domain: 'k3unicorn.tech',
     });
     response.redirect(url_redirect);
   }
