@@ -146,6 +146,7 @@ export class AuthController {
       httpOnly: false,
       sameSite: 'none',
       secure: true,
+      domain: 'https://k3learning.netlify.app',
     });
     response.redirect(url_redirect);
   }
