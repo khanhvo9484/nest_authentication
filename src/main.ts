@@ -13,6 +13,7 @@ async function bootstrap() {
   app.enableCors({
     credentials: true,
     exposedHeaders: ['set-cookie'],
+    origin: ['http://localhost:4000', 'https://k3learning.netlify.app'],
   });
   const config = new ConfigService();
   app.useGlobalPipes(
