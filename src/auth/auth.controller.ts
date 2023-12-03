@@ -145,6 +145,8 @@ export class AuthController {
     response.cookie('payload', JSON.stringify(data), {
       httpOnly: false,
       secure: true,
+      sameSite: 'none',
+      maxAge: 60000,
     });
     response.redirect(url_redirect);
   }
