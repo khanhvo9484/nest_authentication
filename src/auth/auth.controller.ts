@@ -5,6 +5,7 @@ import {
   Get,
   HttpCode,
   Inject,
+  Param,
   Post,
   Req,
   Res,
@@ -140,14 +141,13 @@ export class AuthController {
   async googleAuthCallback(@Req() request, @Res() response: Response) {
     const user = request.user;
     const data = await this.authService.authLogin(user);
-    const url_redirect = this.config.get('FRONTEND_URL') + SUCCESS_PAGE_URL;
+    const userId = data.user.id;
+    const url_redirect =
+      this.config.get('FRONTEND_URL') +
+      SUCCESS_PAGE_URL +
+      `?iduser=${data.user.id}`;
 
-    response.cookie('payload', JSON.stringify(data), {
-      httpOnly: false,
-      secure: true,
-      sameSite: 'none',
-      maxAge: 30000,
-    });
+    await this.cache.set('user_oauth_' + userId, data);
     response.redirect(url_redirect);
   }
 
@@ -160,16 +160,28 @@ export class AuthController {
   async facebookAuthCallback(@Req() request, @Res() response: Response) {
     const user = request.user;
     const data = await this.authService.authLogin(user);
-    const url_redirect = this.config.get('FRONTEND_URL') + SUCCESS_PAGE_URL;
+    const userId = data.user.id;
+    const url_redirect =
+      this.config.get('FRONTEND_URL') +
+      SUCCESS_PAGE_URL +
+      `?iduser=${data.user.id}`;
 
-    response.cookie('payload', JSON.stringify(data), {
-      httpOnly: false,
-      secure: true,
-      sameSite: 'none',
-      domain: 'k3unicorn.tech',
-      maxAge: 30000,
-    });
+    await this.cache.set('user_oauth_' + userId, data);
+
     response.redirect(url_redirect);
+  }
+
+  @Get('/verify-login/:idUser')
+  async verifyLoginByUserID(
+    @Res() response: Response,
+    @Param('idUser') idUser: string,
+  ) {
+    const dataCache = await this.authService.verifyLoginByUserID(idUser);
+
+    return response.status(200).json({
+      message: '',
+      data: dataCache,
+    });
   }
 
   @Get('/test')

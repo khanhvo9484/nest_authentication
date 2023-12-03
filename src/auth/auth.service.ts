@@ -306,4 +306,12 @@ export class AuthService {
       refresh_token: refreshToken,
     };
   }
+
+  async verifyLoginByUserID(userId: string) {
+    const key = 'user_oauth_' + userId;
+    const dataCache = await this.cache.get(key);
+    await this.cache.del(key);
+
+    return dataCache ? dataCache : '';
+  }
 }
