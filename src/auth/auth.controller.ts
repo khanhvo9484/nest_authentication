@@ -142,7 +142,11 @@ export class AuthController {
     const data = await this.authService.authLogin(user);
     const url_redirect = this.config.get('FRONTEND_URL') + SUCCESS_PAGE_URL;
 
-    response.cookie('payload', JSON.stringify(data), { httpOnly: false });
+    response.cookie('payload', JSON.stringify(data), {
+      httpOnly: false,
+      sameSite: 'none',
+      secure: true,
+    });
     response.redirect(url_redirect);
   }
 
@@ -157,7 +161,11 @@ export class AuthController {
     const data = await this.authService.authLogin(user);
     const url_redirect = this.config.get('FRONTEND_URL') + SUCCESS_PAGE_URL;
 
-    response.cookie('payload', JSON.stringify(data), { httpOnly: false });
+    response.cookie('payload', JSON.stringify(data), {
+      httpOnly: false,
+      sameSite: 'none',
+      secure: true,
+    });
     response.redirect(url_redirect);
   }
 
