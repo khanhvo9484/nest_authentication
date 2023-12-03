@@ -143,7 +143,7 @@ export class AuthController {
     const url_redirect = this.config.get('FRONTEND_URL') + SUCCESS_PAGE_URL;
 
     response.cookie('payload', JSON.stringify(data), {
-      httpOnly: false,
+      httpOnly: true,
       sameSite: 'none',
       secure: true,
       domain: 'k3learning.netlify.app',
