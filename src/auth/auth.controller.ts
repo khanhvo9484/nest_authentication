@@ -146,7 +146,7 @@ export class AuthController {
       httpOnly: false,
       sameSite: 'none',
       secure: true,
-      domain: 'k3unicorn.tech',
+      // domain: 'k3unicorn.tech',
     });
     response.redirect(url_redirect);
   }
