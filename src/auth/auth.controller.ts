@@ -145,8 +145,7 @@ export class AuthController {
     response.cookie('payload', JSON.stringify(data), {
       httpOnly: false,
       secure: true,
-      sameSite: 'strict',
-      domain: 'k3unicorn.tech',
+      sameSite: 'none',
       maxAge: 30000,
     });
     response.redirect(url_redirect);
@@ -166,7 +165,7 @@ export class AuthController {
     response.cookie('payload', JSON.stringify(data), {
       httpOnly: false,
       secure: true,
-      sameSite: 'lax',
+      sameSite: 'none',
       domain: 'k3unicorn.tech',
       maxAge: 30000,
     });

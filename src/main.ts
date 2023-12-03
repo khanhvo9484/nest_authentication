@@ -11,6 +11,7 @@ async function bootstrap() {
     bufferLogs: true,
   });
   app.enableCors({
+    origin: ['https://classroom.k3unicorn.tech', 'http://localhost:4000'],
     credentials: true,
     exposedHeaders: ['set-cookie'],
   });
