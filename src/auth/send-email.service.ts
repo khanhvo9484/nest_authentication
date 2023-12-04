@@ -10,7 +10,7 @@ export class SendEmailService {
       'FE_EMAIL_VERIFICATION_URL',
     )}email=${to}&token=${token}`;
 
-    verifyLink = verifyLink.replace('http://', '');
+    verifyLink = verifyLink.replace(this.config.get('PROTOCOL'), '');
 
     sparkpostClient.transmissions
       .send({
@@ -38,7 +38,10 @@ export class SendEmailService {
       'FE_RESET_PASSWORD_URL',
     )}email=${to}&token=${token}`;
 
-    resetPasswordLink = resetPasswordLink.replace('http://', '');
+    resetPasswordLink = resetPasswordLink.replace(
+      this.config.get('PROTOCOL'),
+      '',
+    );
 
     sparkpostClient.transmissions
       .send({
