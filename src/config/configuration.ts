@@ -1,6 +1,7 @@
 export default () => ({
   FRONTEND_URL: process.env.FRONTEND_URL,
   BACKEND_URL: process.env.BACKEND_URL,
+  PROTOCOL: process.env.PROTOCOL || 'http',
 
   FE_EMAIL_VERIFICATION_URL: process.env.FRONTEND_URL + '/auth/verify-email?',
   FE_RESET_PASSWORD_URL: process.env.FRONTEND_URL + '/auth/reset-password?',

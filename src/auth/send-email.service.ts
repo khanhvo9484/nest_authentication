@@ -19,6 +19,7 @@ export class SendEmailService {
         },
         content: {
           template_id: 'email-verification',
+          protocol: this.config.get('PROTOCOL'),
         },
         substitution_data: {
           verify_link: verifyLink,
@@ -46,6 +47,7 @@ export class SendEmailService {
         },
         content: {
           template_id: 'email-forgot-password',
+          protocol: this.config.get('PROTOCOL'),
         },
         substitution_data: {
           reset_password_link: resetPasswordLink,
