@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import sparkpostClient from './email-sender/sparkpost';
 import { ConfigService } from '@nestjs/config';
-
+import { MyLogger } from 'logger/logger.service';
 @Injectable()
 export class SendEmailService {
   constructor(private config: ConfigService) {}
@@ -10,9 +10,10 @@ export class SendEmailService {
       'FE_EMAIL_VERIFICATION_URL',
     )}email=${to}&token=${token}`;
 
+    const logger = new MyLogger();
     verifyLink = verifyLink.replace(this.config.get('PROTOCOL'), '');
-    console.log('verify link: ', verifyLink, '/n');
-    console.log('protocol: ', this.config.get('PROTOCOL'), '/n');
+    logger.log('verify link: ', verifyLink, '/n');
+    logger.log('protocol: ', this.config.get('PROTOCOL'), '/n');
 
     sparkpostClient.transmissions
       .send({
@@ -36,6 +37,7 @@ export class SendEmailService {
       });
   }
   async sendResetPasswordEmail(to: string, token: string) {
+    const logger = new MyLogger();
     let resetPasswordLink = `${this.config.get(
       'FE_RESET_PASSWORD_URL',
     )}email=${to}&token=${token}`;
@@ -44,8 +46,8 @@ export class SendEmailService {
       this.config.get('PROTOCOL'),
       '',
     );
-    console.log('resetpassword_link: ', resetPasswordLink, '/n');
-    console.log('protocol: ', this.config.get('PROTOCOL'), '/n');
+    logger.log('resetpassword_link: ', resetPasswordLink, '/n');
+    logger.log('protocol: ', this.config.get('PROTOCOL'), '/n');
 
     sparkpostClient.transmissions
       .send({
