@@ -11,10 +11,7 @@ export class SendEmailService {
     )}email=${to}&token=${token}`;
 
     const logger = new MyLogger();
-    verifyLink = verifyLink.replace(this.config.get('PROTOCOL'), '');
-    logger.log('verify link: ', verifyLink, '/n');
-    logger.log('protocol: ', this.config.get('PROTOCOL'), '/n');
-
+    verifyLink = verifyLink.replace(this.config.get('PROTOCOL') + '://', '');
     sparkpostClient.transmissions
       .send({
         options: {
@@ -43,11 +40,9 @@ export class SendEmailService {
     )}email=${to}&token=${token}`;
 
     resetPasswordLink = resetPasswordLink.replace(
-      this.config.get('PROTOCOL'),
+      this.config.get('PROTOCOL') + '://',
       '',
     );
-    logger.log('resetpassword_link: ', resetPasswordLink, '/n');
-    logger.log('protocol: ', this.config.get('PROTOCOL'), '/n');
 
     sparkpostClient.transmissions
       .send({
